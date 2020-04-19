@@ -1,0 +1,14 @@
+me:</b> <%= name %><br>  
+
+    <% if @status == 1 %>  
+        <b>Status:</b> <span id="high">Critical</span><br>  
+    <% elsif @status == 2 %>  
+        <b>Status:</b> <span id="medium">Balanced</span><br>  
+    <% elsif @status == 3 %>  
+        <b>Status:</b> <span id="low">Less</span><br>  
+    <% else %>   
+       <b>Status:</b> <span id="low">High Network Traffic</span><br> 		   <% end %>  
+    <b>Last collection:</b> <%= date %><br><br>  
+    <b>WiFi SSID:</b> AryabhattaCollege<br>  
+    <b>IP Address:</b> <%= ip %><br>  
+    <b>Connected Users:</b> <%= connected %>

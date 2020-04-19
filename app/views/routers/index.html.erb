@@ -1,0 +1,119 @@
+<p id="notice"><%= notice %></p>
+
+<h1>Routers</h1>
+
+<div id='map' style='width: 800px; height: 600px;'></div>
+<script>
+	mapboxgl.accessToken = 'pk.eyJ1IjoiYXVzYWFmIiwiYSI6ImNrOTUwbjFmdTAwbG8zZm1wdzdnN3Z4MjQifQ.mCVCZwPR9x3UNLCjNMjINQ';
+// Set bounds to New York, New York
+var bounds = [
+[76.871193,28.444161], // Southwest coordinates
+[77.443169, 28.877006] // Northeast coordinates
+];
+ 
+var map = new mapboxgl.Map({
+container: 'map',
+style: 'mapbox://styles/mapbox/streets-v11',
+center: [77.2167,28.6140],
+zoom: 13,
+maxBounds: bounds // Sets bounds as max
+});
+map.on('load', function() {
+	map.addSource('places', {
+		'type': 'geojson',
+		'data': {
+			'type': 'FeatureCollection',
+			'features': [
+				{
+					'type': 'Feature',
+					'properties': {
+						'description':
+						'<strong>Statistics:&nbsp</strong><p>Details <a href="http://localhost:3000/" target="_blank" title="Opens in a new window">Click Here</a></p><p>Food Capacity: 3000</p><p>Timing of distribution: 8:00-11:00 p.m.</p><p><strong>STATUS : Over Stocked</strong></p>',
+						'icon': 'theatre'
+					},
+					'geometry': {
+						'type': 'Point',
+						'coordinates': [77.2167,28.6140]
+					}
+				},
+				{
+					'type': 'Feature',
+					'properties': {
+						'description':
+						'<strong>Statistics:&nbsp</strong><p>Details <a href="http://localhost:3000/" target="_blank" title="Opens in a new window">Click Here</a></p><p>Food Capacity: 3000</p><p>Timing of distribution: 8:00-11:00 p.m.</p><p><strong>STATUS : Less That buffer Stocked</strong></p>',
+						'icon': 'theatre'
+					},
+					'geometry': {
+						'type': 'Point',
+						'coordinates': [77.2363, 28.6230]
+					}
+				},
+			]
+		}
+	});
+	// Add a layer showing the places.
+		map.addLayer({
+			'id': 'places',
+			'type': 'symbol',
+			'source': 'places',
+			'layout': {
+				'icon-image': '{icon}-15',
+				'icon-allow-overlap': true
+			}
+		});
+	map.on('click', 'places', function(e) {
+		var coordinates = e.features[0].geometry.coordinates.slice();
+		var description = e.features[0].properties.description;
+		 
+		// Ensure that if the map is zoomed out such that multiple
+		// copies of the feature are visible, the popup appears
+		// over the copy being pointed to.
+			while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+				coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+			}
+		 
+		new mapboxgl.Popup()
+			.setLngLat(coordinates)
+			.setHTML(description)
+			.addTo(map);
+	});
+	 
+	// Change the cursor to a pointer when the mouse is over the places layer.
+		map.on('mouseenter', 'places', function() {
+			map.getCanvas().style.cursor = 'pointer';
+		});
+	 
+	// Change it back to a pointer when it leaves.
+		map.on('mouseleave', 'places', function() {
+			map.getCanvas().style.cursor = '';
+		});
+});
+</script>
+
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Latitude</th>
+      <th>Longitude</th>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @routers.each do |router| %>
+      <tr>
+        <td><%= router.name %></td>
+        <td><%= router.latitude %></td>
+        <td><%= router.longitude %></td>
+        <td><%= link_to 'Show', router %></td>
+        <td><%= link_to 'Edit', edit_router_path(router) %></td>
+        <td><%= link_to 'Destroy', router, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to 'New Router', new_router_path %>
